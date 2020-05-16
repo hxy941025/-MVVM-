@@ -76,15 +76,35 @@ CompileUtil = {
         return value
     },
 
+    setVal(vm, expr, value) {
+        const exprArr = expr.split('.');
+        exprArr.reduce((prev, curt) => {
+            if (curt === exprArr[exprArr.length - 1]) {
+                return prev[curt] = value
+            }
+            return prev[curt]
+        }, vm.$data)
+    },
+
     model(node, vm, expr){
         const updateFn = this.updater['modelUpdater'];
         const value = this.getVal(vm, expr);
+        new Watcher(vm, expr, (newVal) => {
+            updateFn && updateFn(node, newVal);
+        });
+        node.addEventListener('input', e => {
+            const newVal = e.target.value;
+            this.setVal(vm, expr, newVal);
+        });
         updateFn && updateFn(node, value);
     },
 
     text(node, vm, text){
         const updateFn = this.updater['textUpdater'];
         const value = this.getVal(vm, text);
+        new Watcher(vm, text, (newVal) => {
+            updateFn && updateFn(node, newVal);
+        });
         updateFn && updateFn(node, value);
     },
 

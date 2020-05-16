@@ -18,9 +18,10 @@ class Watcher {
     }
 
     get(){
+        //每当一个元素或文本节点需要去观察一个数据时便会new一个watcher，此时Dep.target将该watcher绑定，当取值触发getter时，将该watcher推入订阅数组
+        Dep.target = this;
         //new的时候即可取到老值
-        Dep.target = this; //
-        let value = this.getVal(this.vm, this.expr)
+        let value = this.getVal(this.vm, this.expr);
         Dep.target = null;
         return value
     }
